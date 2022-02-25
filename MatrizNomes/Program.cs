@@ -21,7 +21,7 @@ namespace MatrizNomes
                     
                     case 1:
                         Console.Clear();
-                        Console.WriteLine("----- ADICIONAR NOMES -----");
+                        Console.WriteLine("========= ADICIONAR NOMES =========");
                         AddRandom(namesMatrix);
                         //Add(namesMatrix);
                         Console.WriteLine("\nDigite qualquer coisa para voltar para o menu");
@@ -39,7 +39,6 @@ namespace MatrizNomes
                     case 3:
                         Console.Clear();
                         Console.Write("LINHA: ");
-                        Console.Clear();
                         int rowSearch = int.Parse(Console.ReadLine());
                         Console.Clear();
 
@@ -91,6 +90,7 @@ namespace MatrizNomes
                         Console.WriteLine("\nDigite qualquer coisa para voltar para o menu");
                         Console.ReadKey();
                         break;
+
                     default:
                         Console.WriteLine("\nDigite uma das opcoes!\n");
                         Console.ReadKey();
@@ -251,25 +251,23 @@ namespace MatrizNomes
             Console.WriteLine($"-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
 
             Console.WriteLine("Ordenando... \n");
-            for (int i = 0; i < namesMatrix.GetLength(0); i++)
-            {
+            //for (int rowToSort = 0; rowToSort < namesMatrix.GetLength(0); rowToSort++)
+            //{
                 for (int j = 0; j < namesMatrix.GetLength(1) - 1; j++)
                 {
-                    if (i == rowToSort)
+                    for (int k = j + 1; k < namesMatrix.GetLength(1); k++)
                     {
-                        for (int k = j + 1; k < namesMatrix.GetLength(1); k++)
+                        if (string.Compare(namesMatrix[rowToSort, j] , namesMatrix[rowToSort, k]) > 0)
                         {
-                            if (string.Compare(namesMatrix[i, j] , namesMatrix[i, k]) > 0)
-                            {
-                                string temp = namesMatrix[i, j];
-                                namesMatrix[i, j] = namesMatrix[i, k];
-                                namesMatrix[i, k] = temp;
-                            }
+                            string temp = namesMatrix[rowToSort, j];
+                            namesMatrix[rowToSort, j] = namesMatrix[rowToSort, k];
+                            namesMatrix[rowToSort, k] = temp;
                         }
-                        Console.WriteLine($"[{i}, {j}]=> {namesMatrix[i, j]}");
                     }
                 }
-            }
+
+                PrintRow(rowToSort, namesMatrix);
+            //}
         }
 
     }
