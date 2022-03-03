@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace MatrizNomes
 {
@@ -6,12 +7,28 @@ namespace MatrizNomes
     {
         static void Main(string[] args)
         {
-            string[,] namesMatrix = new string[3, 5];
+            //Console.WriteLine("=> Digite quantas linha e quantas colunas terá sua matriz: ");
+            // Console.Write("Linhas: ");
+            //int rows = int.Parse(Console.ReadLine());
+            // Console.Write("Colunas: ");
+            //int cols = int.Parse(Console.ReadLine());
 
+
+            string[,] namesMatrix = new string[3, 5];
+            Console.Clear();
             int option = 7;
+            string filePath = "";
+            
             while (option != 0)
-            { 
-                Menu();
+            {
+                if (filePath == "")
+                {
+                    Menu();
+                }
+                else
+                {
+                    Menu(filePath);
+                }
                 option = MenuChoice();
 
                 switch (option)
@@ -22,8 +39,30 @@ namespace MatrizNomes
                     case 1:
                         Console.Clear();
                         Console.WriteLine("========= ADICIONAR NOMES =========");
-                        AddRandom(namesMatrix);
-                        //Add(namesMatrix);
+                        Console.WriteLine("1 - Digitar nomes");
+                        Console.WriteLine("2 - Preencher matriz aleatoriamente");
+                        Console.WriteLine("3 - Fazer upload de arquivo para preencher a matriz");
+                        Console.Write("Opcao: ");
+                        int addOption = int.Parse(Console.ReadLine());
+                        
+                        if (addOption == 1)
+                        {
+                            Add(namesMatrix);
+                        }
+                        else if (addOption == 2)
+                        {
+                            AddRandom(namesMatrix);
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            Console.WriteLine("=> Fazer download de arquivo para preencher a matriz");
+                            Console.WriteLine("Digite o caminho do arquivo: ");
+                            filePath = Console.ReadLine();
+                            Console.ReadKey();
+                            DownloadMatrix(filePath, namesMatrix);
+                        }
+
                         Console.WriteLine("\nDigite qualquer coisa para voltar para o menu");
                         Console.ReadKey();
                         break;
@@ -91,12 +130,83 @@ namespace MatrizNomes
                         Console.ReadKey();
                         break;
 
+                    case 7:
+                        Console.WriteLine("=> Upload para arquivo");
+                        Console.Write("Digite o caminho do arquivo: ");
+                        filePath = Console.ReadLine();
+                        UploadMatrix(filePath, namesMatrix);
+                        Console.WriteLine("Upload para " + filePath + "feito com sucesso!");
+                        Console.ReadKey();
+                        break;
+
                     default:
                         Console.WriteLine("\nDigite uma das opcoes!\n");
                         Console.ReadKey();
                         break;
                 }
             }
+        }
+
+        private static void DownloadMatrix(string filePath, string[,] namesMatrix)
+        {
+            try
+            {
+                StreamReader reader = new StreamReader(filePath);
+                string data = reader.ReadToEnd();
+                string[] dataSplited = data.Split(",");
+
+                foreach (string name in dataSplited)
+                {
+                    for (int i = 0; i < namesMatrix.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < namesMatrix.GetLength(1); j++)
+                        {
+                            namesMatrix[i, j] = name;
+                        }
+                    }
+                }
+                reader.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Excecao: " + e.Message);
+            }
+        }
+
+        private static void UploadMatrix(string filePath, string[,] namesMatrix)
+        {
+            try
+            {
+                StreamWriter writer = new StreamWriter(filePath);
+                for (int i = 0; i < namesMatrix.GetLength(0); i++)
+                {
+                    for (int j = 0; j < namesMatrix.GetLength(1); j++)
+                    {
+                        writer.Write(string.Format($"{namesMatrix[i, j]},"));
+                    }
+                }
+                writer.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Excecao: " + e.Message);
+            }
+        }
+
+        private static void Menu(string filePath)
+        {
+            Console.Clear();
+            Console.WriteLine("Arquivo utilizado: " + filePath);
+            Console.WriteLine("----------- MENU ----------\n");
+            Console.WriteLine("[1] - Adicionar nomes");
+            Console.WriteLine("[2] - Imprimir");
+            Console.WriteLine("[3] - Imprimir linha");
+            Console.WriteLine("[4] - Imprimir coluna");
+            Console.WriteLine("[5] - Procurar nome");
+            Console.WriteLine("[6] - Ordenar linha");
+            Console.WriteLine("[7] - Exportar matriz para arquivo txt");
+            Console.WriteLine("[8] - Importar matriz para arquivo txt");
+            Console.WriteLine("[0] - Sair\n");
         }
 
         private static void Menu()
@@ -109,6 +219,8 @@ namespace MatrizNomes
             Console.WriteLine("[4] - Imprimir coluna");
             Console.WriteLine("[5] - Procurar nome");
             Console.WriteLine("[6] - Ordenar linha");
+            Console.WriteLine("[7] - Exportar matriz para arquivo txt");
+            Console.WriteLine("[8] - Importar matriz para arquivo txt");
             Console.WriteLine("[0] - Sair\n");
         }
 
@@ -162,7 +274,7 @@ namespace MatrizNomes
             {
                 for (int j = 0; j < namesMatrix.GetLength(1); j++)
                 {
-                    Console.WriteLine(string.Format($"{namesMatrix[i, j]}\t")); ;
+                    Console.WriteLine(string.Format($"{namesMatrix[i, j]}\t"));
                 }
                 Console.WriteLine();
             }
@@ -198,7 +310,7 @@ namespace MatrizNomes
 
         private static void Find(string nameSearch, string[,] namesMatrix)
         {
-            int foundCount = CountName(nameSearch, namesMatrix);
+            int foundCount = CountNames(nameSearch, namesMatrix);
             int rows = namesMatrix.GetLength(0);
             int cols = namesMatrix.GetLength(1);
 
@@ -224,7 +336,7 @@ namespace MatrizNomes
             }
         }
 
-        private static int CountName(string nameSearch, string[,] namesMatrix)
+        private static int CountNames(string nameSearch, string[,] namesMatrix)
         {
             int foundCount = 0;
             int rows = namesMatrix.GetLength(0);
@@ -251,8 +363,6 @@ namespace MatrizNomes
             Console.WriteLine($"-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
 
             Console.WriteLine("Ordenando... \n");
-            //for (int rowToSort = 0; rowToSort < namesMatrix.GetLength(0); rowToSort++)
-            //{
                 for (int j = 0; j < namesMatrix.GetLength(1) - 1; j++)
                 {
                     for (int k = j + 1; k < namesMatrix.GetLength(1); k++)
@@ -267,8 +377,9 @@ namespace MatrizNomes
                 }
 
                 PrintRow(rowToSort, namesMatrix);
-            //}
         }
+
+
 
     }
 }
